@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#DC2626" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Fraud Detector · Threshold-tuned alerts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container row">
+        <a href="#" class="brand">
+          <span class="mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="22" height="22">
+              <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 12 L26 12 L24 24 L8 24 Z"/>
+                <path d="M6 12 L10 6 L22 6 L26 12"/>
+                <circle cx="16" cy="18" r="1.6" fill="currentColor"/>
+              </g>
+            </svg>
+          </span>
+          <span class="wordmark">
+            <span>Fraud Detector</span>
+            <small>imbalanced binary classification</small>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="#dash">Dashboard</a>
+          <a href="#why">Why threshold</a>
+          <a href="https://github.com/andreaisabelmontana/fraud-detector" target="_blank" rel="noreferrer">Source ↗</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">Machine learning · interactive demo</span>
+        <h1>When every <span class="accent">$1</span> matters.</h1>
+        <p class="lede">
+          A thousand synthetic credit-card transactions, ~1.5% of them fraudulent, scored by a
+          calibrated model. Drag the threshold and watch the confusion matrix, precision, recall,
+          and live alert stream re-classify in real time.
+        </p>
+        <div class="hero-actions">
+          <a href="#dash" class="btn btn-primary">Open the dashboard</a>
+          <a href="#why" class="btn btn-secondary">Why threshold matters</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="dash" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Live</span>
+            <h2>Threshold dashboard</h2>
+            <p class="muted" style="max-width: 64ch">
+              Synthetic dataset, deterministic across reloads. The "model" is a calibrated scorer
+              with realistic overlap — frauds tend to score high, legits low, but the two
+              distributions overlap enough that no threshold is perfect.
+            </p>
+          </div>
+        </div>
+
+        <div class="dash">
+          <div class="threshold card">
+            <div class="row between" style="margin-bottom: 0.4rem">
+              <label for="threshold" class="lbl">Decision threshold</label>
+              <span class="mono" id="thr-val">0.50</span>
+            </div>
+            <input id="threshold" type="range" min="0.05" max="0.95" step="0.01" value="0.50" />
+            <div class="row between mono small muted" style="margin-top:0.3rem">
+              <span>flag fewer (precision↑)</span>
+              <span>flag more (recall↑)</span>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric mtr-prec">
+              <span class="lbl">Precision</span>
+              <span class="val" id="m-prec">—</span>
+              <span class="sub muted">of flagged, share that's truly fraud</span>
+            </div>
+            <div class="metric mtr-rec">
+              <span class="lbl">Recall</span>
+              <span class="val" id="m-rec">—</span>
+              <span class="sub muted">of all fraud, share you caught</span>
+            </div>
+            <div class="metric mtr-f1">
+              <span class="lbl">F1</span>
+              <span class="val" id="m-f1">—</span>
+              <span class="sub muted">harmonic mean of P &amp; R</span>
+            </div>
+            <div class="metric mtr-acc">
+              <span class="lbl">Accuracy</span>
+              <span class="val" id="m-acc">—</span>
+              <span class="sub muted">misleading on imbalanced data</span>
+            </div>
+          </div>
+
+          <div class="charts">
+            <article class="card chart-card">
+              <h3>Confusion matrix</h3>
+              <div class="cm" id="cm">
+                <span class="cm-label" style="grid-area: rl">truth</span>
+                <span class="cm-label cl" style="grid-area: cl">prediction</span>
+                <span class="cm-hh" style="grid-area: ch1">legit</span>
+                <span class="cm-hh" style="grid-area: ch2">fraud</span>
+                <span class="cm-rh" style="grid-area: rh1">legit</span>
+                <span class="cm-rh" style="grid-area: rh2">fraud</span>
+                <div class="cm-cell tn" style="grid-area: tn"><strong id="cm-tn">0</strong><span>true negative</span></div>
+                <div class="cm-cell fp" style="grid-area: fp"><strong id="cm-fp">0</strong><span>false alarm</span></div>
+                <div class="cm-cell fn" style="grid-area: fn"><strong id="cm-fn">0</strong><span>missed fraud</span></div>
+                <div class="cm-cell tp" style="grid-area: tp"><strong id="cm-tp">0</strong><span>caught fraud</span></div>
+              </div>
+            </article>
+
+            <article class="card chart-card">
+              <h3>ROC curve</h3>
+              <p class="muted small" style="margin: 0 0 0.5rem">
+                Each point is a different threshold. The marker is your current pick.
+              </p>
+              <canvas id="roc" width="600" height="300"></canvas>
+              <div class="auc mono" id="auc">AUC = —</div>
+            </article>
+
+            <article class="card chart-card chart-wide">
+              <h3>All 1,000 transactions, projected</h3>
+              <p class="muted small" style="margin: 0 0 0.5rem">
+                Two abstract feature axes. Frauds tend to cluster top-right; legits to the lower-left.
+                Marker outline reflects what the current threshold predicts.
+              </p>
+              <canvas id="scatter" width="900" height="380"></canvas>
+            </article>
+          </div>
+
+          <article class="card stream-card">
+            <div class="row between" style="margin-bottom: 0.5rem">
+              <h3>Live transaction stream</h3>
+              <div class="row" style="gap:0.4rem">
+                <button id="btn-stream" class="btn btn-secondary">⏸ Pause</button>
+                <button id="btn-step"   class="btn btn-secondary">▶ Step</button>
+              </div>
+            </div>
+            <ol class="stream" id="stream"></ol>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="why" class="section section-muted">
+      <div class="container" style="max-width: 880px">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Reading the dashboard</span>
+            <h2>Why threshold is the whole game.</h2>
+          </div>
+        </div>
+        <p>
+          A binary classifier doesn't give you an answer — it gives you a score between 0 and 1.
+          Someone has to choose where to draw the line. That's the threshold.
+        </p>
+        <p>
+          On a balanced dataset, 0.5 is a fine default. On <strong>imbalanced</strong> data — like
+          credit-card fraud where positives are well under 1% of all transactions — the same threshold
+          will catch almost nothing, because the model's distribution of scores is concentrated near
+          zero. Lower the threshold and you start catching more fraud (recall climbs) but you also
+          start raising more false alarms (precision falls). Move it the other way and you flag almost
+          nothing — your precision looks great, but you're missing real fraud.
+        </p>
+        <p>
+          The right threshold is a business decision, not a statistics one: how much is a missed
+          fraud worth versus a customer-annoying false alarm? The dashboard above lets you feel
+          that trade-off rather than read about it. Watch the confusion matrix as you drag, and
+          notice that "accuracy" barely moves — that's why we don't use it on this problem.
+        </p>
+
+        <h3 style="margin-top: 2rem">What the metrics mean here</h3>
+        <ul>
+          <li><strong>Precision</strong> — of the transactions you flagged, what fraction were really fraud.</li>
+          <li><strong>Recall</strong> — of the real fraud cases, what fraction you successfully flagged.</li>
+          <li><strong>F1</strong> — the harmonic mean of precision and recall; a single number that punishes lopsided trade-offs.</li>
+          <li><strong>Accuracy</strong> — fraction of all transactions you classified correctly. On a 98.5% negative class, a model that flags nothing already scores 98.5%.</li>
+          <li><strong>AUC</strong> — the area under the ROC curve. Threshold-independent quality of the underlying scorer.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="row" style="padding:2rem 0 1.5rem; gap:2rem; flex-wrap:wrap; align-items:flex-start">
+          <div style="flex:1; min-width:240px">
+            <strong>Fraud Detector — threshold dashboard</strong>
+            <p class="muted small" style="margin-top:0.5rem">
+              Portfolio piece. All data is synthetic and procedurally generated — no real
+              transactions, no real cardholders.
+            </p>
+          </div>
+          <div style="flex:1; min-width:200px">
+            <strong>Project</strong>
+            <ul class="footlist">
+              <li><a href="https://github.com/andreaisabelmontana/fraud-detector" target="_blank" rel="noreferrer">This repo</a></li>
+              <li><a href="https://github.com/Geethika2506/Creditcard-fraud-detection-Machine-Learning-final-project" target="_blank" rel="noreferrer">Original notebook</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="legal">© <span id="yr"></span> Andrea Montana · IE School of Science &amp; Technology</div>
+      </div>
+    </footer>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
