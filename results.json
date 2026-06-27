@@ -1,0 +1,46 @@
+{
+  "dataset": {
+    "n_total": 40000,
+    "fraud_rate": 0.014575,
+    "n_positive": 583,
+    "source": "synthetic (fraud.make_data, seed=1729)"
+  },
+  "selected_model": "logreg_balanced",
+  "threshold": 0.970710280090408,
+  "threshold_selection": {
+    "threshold": 0.970710280090408,
+    "precision": 0.5,
+    "recall": 0.4224137931034483,
+    "f1": 0.45794392523364486,
+    "target": "precision>=0.5",
+    "met_target": true
+  },
+  "validation_ranking": {
+    "logreg_balanced": {
+      "roc_auc": 0.9607596791406428,
+      "pr_auc": 0.43007572933511357
+    },
+    "gradient_boosting": {
+      "roc_auc": 0.949947733515282,
+      "pr_auc": 0.3301790028045812
+    }
+  },
+  "test": {
+    "precision": 0.45544554455445546,
+    "recall": 0.39316239316239315,
+    "f1": 0.4220183486238532,
+    "accuracy": 0.98425,
+    "roc_auc": 0.9493229507183585,
+    "pr_auc": 0.44607774536636624,
+    "confusion": {
+      "tp": 46,
+      "fp": 55,
+      "tn": 7828,
+      "fn": 71
+    }
+  },
+  "figures": [
+    "figures/pr_curve.png",
+    "figures/confusion_matrix.png"
+  ]
+}

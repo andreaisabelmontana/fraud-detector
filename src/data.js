@@ -1,15 +1,22 @@
 // ============================================================
-// Synthetic transaction generator.
+// In-browser visualisation stand-in for the real classifier.
 //
-// Produces a deterministic batch of ~1,000 fake transactions with the
-// shape of the classic Kaggle credit-card fraud problem:
+// The genuine model is the Python scikit-learn pipeline in this repo
+// (fraud/ + train.py): a class-weighted LogisticRegression scoring
+// ROC-AUC 0.949 / PR-AUC 0.446 on held-out data, with a decision
+// threshold chosen along the precision-recall curve.
+//
+// To keep this page self-contained and GitHub-Pages-safe (no backend,
+// no model download), the dashboard replays a deterministic batch of
+// ~1,000 synthetic transactions whose per-row score mirrors the real
+// model's behaviour:
 //   - heavy class imbalance (~1.5% fraud)
-//   - a per-transaction "model score" in [0,1] that's correlated with the
-//     true label but with realistic overlap, so different thresholds yield
-//     genuinely different confusion matrices
+//   - a "model score" in [0,1] correlated with the true label but with
+//     realistic overlap, so different thresholds yield genuinely
+//     different confusion matrices
 //
-// Nothing here is real data. The seeded PRNG keeps the dataset identical
-// across page loads so screenshots and shareable URLs stay consistent.
+// Nothing here is real customer data. The seeded PRNG keeps the dataset
+// identical across page loads so screenshots stay consistent.
 // ============================================================
 
 // ----- seeded PRNG --------------------------------------------------------

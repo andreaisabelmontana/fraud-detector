@@ -42,9 +42,11 @@
         <span class="eyebrow">Machine learning · interactive demo</span>
         <h1>When every <span class="accent">$1</span> matters.</h1>
         <p class="lede">
-          A thousand synthetic credit-card transactions, ~1.5% of them fraudulent, scored by a
-          calibrated model. Drag the threshold and watch the confusion matrix, precision, recall,
-          and live alert stream re-classify in real time.
+          Synthetic transactions, ~1.5% of them fraudulent. The real engine is a
+          scikit-learn pipeline in this repo — a class-weighted logistic model that scores
+          <strong>ROC-AUC 0.949 / PR-AUC 0.446</strong> on held-out data. Drag the threshold and
+          watch the confusion matrix, precision, recall, and live alert stream re-classify in
+          real time.
         </p>
         <div class="hero-actions">
           <a href="#dash" class="btn btn-primary">Open the dashboard</a>
@@ -59,10 +61,13 @@
           <div>
             <span class="eyebrow">Live</span>
             <h2>Threshold dashboard</h2>
-            <p class="muted" style="max-width: 64ch">
-              Synthetic dataset, deterministic across reloads. The "model" is a calibrated scorer
-              with realistic overlap — frauds tend to score high, legits low, but the two
-              distributions overlap enough that no threshold is perfect.
+            <p class="muted" style="max-width: 70ch">
+              This page visualises the threshold-driven classifier. The scores you see mirror the
+              behaviour of the real model — a class-weighted <code>LogisticRegression</code> trained
+              and evaluated in the Python pipeline in this repo, with realistic overlap so no single
+              threshold is perfect. To keep the page self-contained and Pages-safe, the in-browser
+              scorer is a deterministic stand-in; the genuine engine, metrics and chosen threshold
+              live in <code>fraud/</code> and <code>train.py</code>.
             </p>
           </div>
         </div>
@@ -195,17 +200,18 @@
       <div class="container">
         <div class="row" style="padding:2rem 0 1.5rem; gap:2rem; flex-wrap:wrap; align-items:flex-start">
           <div style="flex:1; min-width:240px">
-            <strong>Fraud Detector — threshold dashboard</strong>
+            <strong>Fraud Detector</strong>
             <p class="muted small" style="margin-top:0.5rem">
-              Portfolio piece. All data is synthetic and procedurally generated — no real
-              transactions, no real cardholders.
+              A real scikit-learn pipeline (logistic + gradient-boosting, class-weighted) with a
+              threshold chosen along the precision-recall curve. Held-out test: ROC-AUC 0.949,
+              PR-AUC 0.446. All data is synthetic — no real transactions, no real cardholders.
             </p>
           </div>
           <div style="flex:1; min-width:200px">
             <strong>Project</strong>
             <ul class="footlist">
               <li><a href="https://github.com/andreaisabelmontana/fraud-detector" target="_blank" rel="noreferrer">This repo</a></li>
-              <li><a href="https://github.com/Geethika2506/Creditcard-fraud-detection-Machine-Learning-final-project" target="_blank" rel="noreferrer">Original notebook</a></li>
+              <li><a href="https://github.com/andreaisabelmontana/fraud-detector/blob/main/train.py" target="_blank" rel="noreferrer">train.py — model + metrics</a></li>
             </ul>
           </div>
         </div>
